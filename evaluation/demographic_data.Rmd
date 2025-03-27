@@ -1,0 +1,36 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+
+```{r}
+library(tidyverse)
+
+data <- ds %>% filter(AN03 == "Accept")
+```
+demographic data:
+Age
+```{r}
+min(data %>% pull(PI01_01))
+max(data %>% pull(PI01_01))
+mean(data %>% pull(PI01_01))
+```
+Gender
+```{r}
+data %>% group_by(PI02) %>% count()
+```
+previous experience
+```{r}
+ggplot(data, aes(x=PI03_01)) + geom_bar() # Machine Learning
+ggplot(data, aes(x=PI03_02)) + geom_bar() # xAI
+ggplot(data, aes(x=PI03_03)) + geom_bar() # bike sharing systems
+```
+Jobs
+```{r}
+data %>% pull(PI04_01)
+```
+Dataset
+```{r}
+ggplot(data, aes(x=CD01)) + geom_bar()
+```

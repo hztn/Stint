@@ -1,0 +1,146 @@
+---
+title: "Finch Eval Results"
+output: html_notebook
+---
+
+```{r}
+library(tidyverse)
+
+data <- ds %>% filter(AN03 == "Accept")
+```
+
+free-text
+```{r}
+data %>% pull(QU03_01)
+```
+
+SUS
+
+```{r}
+nr_participants = 8
+breaks_participants = c(-8,-6, -4, -2 ,0, 2, 4, 6, 8)
+labels_participants = c("8", "6", "4", "2", "0", "2", "4", "6", "8")
+columns = c("QU01_01", "QU01_02", "QU01_03", "QU01_04", "QU01_05", "QU01_06", "QU01_07", "QU01_08", "QU01_09", "QU01_10")
+answer_labels=c("Strongly disagree", "Disagree", "neither agree nor disagree", "Agree", "Strongly agree")
+
+curdata <- data %>% 
+  #filter(!is_at_risk) %>%
+  select(columns) %>%
+  #mutates rows
+  mutate(QU01_01 = as.integer(QU01_01), QU01_02 = as.integer(QU01_02), QU01_03 = as.integer(QU01_03), QU01_04 = as.integer(QU01_04), QU01_05 = as.integer(QU01_05), QU01_06 = as.integer(QU01_06), QU01_07 = as.integer(QU01_07), QU01_08 = as.integer(QU01_08), QU01_09 = as.integer(QU01_09), QU01_10 = as.integer(QU01_10), .keep="unused") %>%
+  pivot_longer(cols=columns, names_to="question", values_to="answer")
+
+curdata <- curdata %>% group_by(question, answer) %>% summarize("nr"=n())
+curdata$answer <- factor(curdata$answer, levels=c(1,2,3,4,5))
+curdata <- curdata %>% mutate(nr= if_else(answer == 3, nr/2, as.double(nr)))
+curdata <- curdata %>% mutate(question = case_match(question, 
+                                                    "QU01_01" ~ "I think that I would like to use this system frequently.",
+                                                    "QU01_02" ~ "I found the system unnecessarily complex. (reversed)",
+                                                    "QU01_03" ~ "I thought the system was easy to use.",
+                                                    "QU01_04" ~ "I think that I would need the support of a technical person to be able to use this system. (reversed)",
+                                                    "QU01_05" ~ "I found the various functions in this system were well integrated.",
+                                                    "QU01_06" ~ "I thought there was too much inconsistency in this system. (reversed)",
+                                                    "QU01_07" ~ "I would imagine that most people would learn to use this system very quickly.",
+                                                    "QU01_08" ~ "I found the system very cumbersome to use. (reversed)",
+                                                    "QU01_09" ~ "I felt very confident using the system.",
+                                                    "QU01_10" ~ "I needed to learn a lot of things before I could get going with this system (reversed)"))
+
+ggplot(curdata, aes(x="", y=nr, fill=answer)) + 
+  geom_col(data=curdata %>% filter(answer %in% c(1,2,3)), aes(y=-nr)) + 
+  geom_col(data=curdata %>% filter(answer %in% c(3,4,5) ), aes(y=nr), position = position_stack(reverse = TRUE)) + 
+ # geom_label(data=curdata %>% filter(answer %in% c(1,2,3)), aes(y=-nr*1.7, label=nr))+
+ # geom_label(data=curdata %>% filter(answer %in% c(3,4,5)), aes(y=nr*1.5, label=nr))+
+  coord_flip() + 
+  theme(panel.background = element_blank(), 
+        legend.position="bottom", legend.justification = "left", legend.margin = margin(t = 0, r = 0, b = 0, l = -25, unit = "mm"),
+        text=element_text(size=11),
+        axis.line.x.bottom = element_line(color = 'black'),
+        axis.text = element_text(size=11),
+        axis.title = element_text(size=12),
+        strip.text = element_text(size=12),
+        strip.background = element_rect(fill = "white")) +
+  scale_fill_manual(values=c('#d7191c','#fdae61','#c0c0c0','#abd9e9','#2c7bb6'), 
+                    breaks=c(1,2,3,4,5),
+                    labels=answer_labels,
+                    drop = FALSE) +
+  labs(fill="", x="")+
+  scale_y_continuous("number of participants", breaks_participants, labels=labels_participants, limits=c(-nr_participants,nr_participants)) +
+  facet_wrap("question", nrow=10, labeller = label_wrap_gen(width=200), scales="free")+
+  theme(legend.justification ="center")
+  ggsave("images/SUS.jpg", height=8, width=8)
+  
+```
+
+```{r}
+columns = c("QU01_01", "QU01_02", "QU01_03", "QU01_04", "QU01_05", "QU01_06", "QU01_07", "QU01_08", "QU01_09", "QU01_10")
+odd_columns = c("QU01_01", "QU01_03","QU01_05", "QU01_07", "QU01_09")
+even_columns = c("QU01_02", "QU01_04", "QU01_06", "QU01_08", "QU01_10")
+curdata <- data %>% 
+  select(columns) %>%
+  mutate(QU01_01 = as.integer(QU01_01), QU01_02 = as.integer(QU01_02), QU01_03 = as.integer(QU01_03), QU01_04 = as.integer(QU01_04), QU01_05 = as.integer(QU01_05), QU01_06 = as.integer(QU01_06), QU01_07 = as.integer(QU01_07), QU01_08 = as.integer(QU01_08), QU01_09 = as.integer(QU01_09), QU01_10 = as.integer(QU01_10), .keep="unused")
+curdata <- curdata %>%
+  rowwise() %>%
+  mutate(X = sum(c_across(odd_columns)) - 5) %>%
+  mutate(Y = sum(c_across(even_columns)) - 5) %>% # normally, Y is calculated reversed, but our numbers are already reversed
+  mutate(SUS = (X+Y)*2.5)
+
+curdata
+  
+curdata %>% ungroup() %>% summarise(mean(SUS))
+```
+
+ESG
+```{r}
+nr_participants = 8
+breaks_participants = c(-8,-6, -4, -2 ,0, 2, 4, 6, 8)
+labels_participants = c("8", "6", "4", "2", "0", "2", "4", "6", "8")
+columns = c("QU07_01", "QU07_02", "QU07_03", "QU07_04", "QU07_05", "QU07_06", "QU07_07", "QU07_08", "QU07_09")
+answer_labels=c("Strongly disagree", "Disagree", "neither agree nor disagree", "Agree", "Strongly agree")
+
+curdata <- data %>% 
+  #filter(!is_at_risk) %>%
+  select(columns) %>%
+  #mutates rows
+  mutate(QU07_01 = as.integer(QU07_01), QU07_02 = as.integer(QU07_02), QU07_03 = as.integer(QU07_03), QU07_04 = as.integer(QU07_04), QU07_05 = as.integer(QU07_05), QU07_06 = as.integer(QU07_06), QU07_07 = as.integer(QU07_07), QU07_08 = as.integer(QU07_08), QU07_09 = as.integer(QU07_09), .keep="unused") %>%
+  pivot_longer(cols=columns, names_to="question", values_to="answer")
+
+curdata <- curdata %>% group_by(question, answer) %>% summarize("nr"=n())
+curdata$answer <- factor(curdata$answer, levels=c(1,2,3,4,5))
+curdata <- curdata %>% mutate(nr= if_else(answer == 3, nr/2, as.double(nr)))
+curdata <- curdata %>% mutate(question = case_match(question, 
+                                                    "QU07_01" ~ "From the explanation, I understand how the model works.",
+                                                    "QU07_02" ~ "This explanation of how the model works is satisfying.",
+                                                    "QU07_03" ~ "This explanation of how the model works has sufficient detail.",
+                                                    "QU07_04" ~ "This explanation seems complete.",
+                                                    "QU07_05" ~ "This explanation shows me how accurate the model is.",
+                                                    "QU07_06" ~ "This explanation shows me how reliable the model is.",
+                                                    "QU07_07" ~ "This explanation tells me how to use the model.",
+                                                    "QU07_08" ~ "This explanation is useful to my goals.",
+                                                    "QU07_09" ~ "This explanation helps me know when I should trust and not trust the model."))
+
+ggplot(curdata, aes(x="", y=nr, fill=answer)) + 
+  geom_col(data=curdata %>% filter(answer %in% c(1,2,3)), aes(y=-nr)) + 
+  geom_col(data=curdata %>% filter(answer %in% c(3,4,5) ), aes(y=nr), position = position_stack(reverse = TRUE)) + 
+ # geom_label(data=curdata %>% filter(answer %in% c(1,2,3)), aes(y=-nr*1.7, label=nr))+
+ # geom_label(data=curdata %>% filter(answer %in% c(3,4,5)), aes(y=nr*1.5, label=nr))+
+  coord_flip() + 
+  theme(panel.background = element_blank(), 
+        legend.position="bottom", legend.justification = "left", legend.margin = margin(t = 0, r = 0, b = 0, l = 0, unit = "mm"),
+        text=element_text(size=11),
+        axis.line.x.bottom = element_line(color = 'black'),
+        axis.text = element_text(size=11),
+        axis.title = element_text(size=12),
+        strip.text = element_text(size=12),
+        strip.background = element_rect(fill = "white")) +
+  scale_fill_manual(values=c('#d7191c','#fdae61','#c0c0c0','#abd9e9','#2c7bb6'), 
+                    breaks=c(1,2,3,4,5),
+                    labels=answer_labels,
+                    drop = FALSE
+                    ) +
+  labs(fill="", x="")+
+  scale_y_continuous("number of participants", breaks_participants, labels=labels_participants, limits=c(-nr_participants,nr_participants)) +
+  facet_wrap("question", nrow=9, labeller = label_wrap_gen(width=85), scales="free") +
+  theme(legend.justification ="center")
+  ggsave("images/ESG.jpg", height=7, width=6.5)
+  
+```
