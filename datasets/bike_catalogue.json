@@ -1,0 +1,78 @@
+{
+	"target": "cnt",
+	"features": [
+		{
+			"name": "cnt",
+			"label": "hourly bike rentals"
+		},
+		{
+			"name": "workingday",
+			"classes": [
+				{"value": 0, "label": "no"},
+				{"value": 1, "label": "yes"}
+			]
+		},
+		{
+			"name": "season",
+			"classes": [
+				{"value": 1, "label": "winter"},
+				{"value": 2, "label": "spring"},
+				{"value": 3, "label": "summer"},
+				{"value": 4, "label": "autumn"}
+			]
+		},
+		{
+			"name": "year",
+			"classes": [
+				{"value": 0, "label": "2011"},
+				{"value": 1, "label": "2012"}
+			]
+		},
+		{
+			"name": "holiday",
+			"classes": [
+				{"value": 0, "label": "no"},
+				{"value": 1, "label": "yes"}
+			]
+		},
+		{
+			"name": "weekday",
+			"classes": [
+				{"value": 0, "label": "Sunday"},
+				{"value": 1, "label": "Monday"},
+				{"value": 2, "label": "Tuesday"},
+				{"value": 3, "label": "Wednesday"},
+				{"value": 4, "label": "Thursday"},
+				{"value": 5, "label": "Friday"},
+				{"value": 6, "label": "Saturday"}
+			]
+		},
+		{
+			"name": "weather_situation",
+			"classes": [
+				{"value": 1, "label": "clear"},
+				{"value": 2, "label": "cloudy"},
+				{"value": 3, "label": "light rain"},
+				{"value": 4, "label": "heavy rain"}
+			]
+		},
+		{
+			"name": "month",
+			"classes": [
+				{"value": 1, "label": "January"},
+				{"value": 2, "label": "February"},
+				{"value": 3, "label": "March"},
+				{"value": 4, "label": "April"},
+				{"value": 5, "label": "May"},
+				{"value": 6, "label": "June"},
+				{"value": 7, "label": "July"},
+				{"value": 8, "label": "August"},
+				{"value": 9, "label": "September"},
+				{"value": 10, "label": "October"},
+				{"value": 11, "label": "November"},
+				{"value": 12, "label": "December"}
+			]
+		}
+
+	]
+}
