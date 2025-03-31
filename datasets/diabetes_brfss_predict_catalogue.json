@@ -1,0 +1,42 @@
+{
+    "features": [
+        {
+            "name": "Smoker",
+            "classes": [
+                {"value": "Never"},
+                {"value": "Former"},
+                {"value": "Some days"},
+                {"value": "Every day"}
+            ]
+        },
+        {
+            "name": "General_Health",
+            "label": "General Health",
+            "classes": [
+                {"value": "Poor"},
+                {"value": "Fair"},
+                {"value": "Good"},
+                {"value": "Very good"},
+                {"value": "Excellent"}
+            ]
+        },
+        {
+            "name": "Weight_Category",
+            "label": "Weight",
+            "classes": [
+                {"value": 0, "label": "Underweight"},
+                {"value": 1, "label": "Normal Weight"},
+                {"value": 2, "label": "Overweight"},
+                {"value": 3, "label": "Obese"}
+            ]
+        },
+        {
+            "name": "Exercise",
+            "label": "Exercise",
+            "classes": [
+                {"value": 0, "label": "No"},
+                {"value": 1, "label": "Yes"}
+            ]
+        }
+    ]
+}

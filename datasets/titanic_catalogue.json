@@ -1,0 +1,12 @@
+{
+    "features": [
+        {
+            "name": "pclass",
+            "label": "class"
+        },
+        {
+            "name": "sibsp",
+            "label": "siblings/ spouses"
+        }
+    ]
+}
